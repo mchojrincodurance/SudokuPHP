@@ -1,6 +1,6 @@
 {
   "name": "codurance/php-sudoku",
-  "description": "A php based solution for the Sudoku Kata (https://www.codurance.com/katalyst/sudoku-kata)",
+  "description": "A php based solution for the src/Sudoku Kata (https://www.codurance.com/katalyst/sudoku-kata)",
   "minimum-stability": "stable",
   "license": "proprietary",
   "authors": [
@@ -9,6 +9,11 @@
       "email": "mauro.chojrin@codurance.com"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "Sudoku\\": "src/Sudoku/"
+    }
+  },
   "require": {
   },
   "require-dev": {

@@ -52,6 +52,6 @@ class FeatureContext implements Context
      */
     public function iAskTheCheckerToCheckTheFile(string $filename)
     {
-        exec("php check_solution.php ".$filename, $this->output);
+        exec("php check_solution.php ".$this->testDataDir.DIRECTORY_SEPARATOR.$filename, $this->output);
     }
 }
