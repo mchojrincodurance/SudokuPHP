@@ -12,7 +12,7 @@ $matrix = [];
 while (!feof($inputFile)) {
     $readCSV = fgetcsv($inputFile);
     if (!empty($readCSV)) {
-        $matrix[] = array_slice($readCSV, 0, -1);
+        $matrix[] = array_map(static fn(string $value) => (int)$value, array_slice($readCSV, 0, -1));
     }
 }
 
