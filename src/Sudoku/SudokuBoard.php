@@ -101,7 +101,7 @@ class SudokuBoard
     {
         $columns = [];
 
-        for($i = 0; $i < count($this->matrix); $i++) {
+        for ($i = 0; $i < count($this->matrix); $i++) {
             $columns[] = new NumberSet(array_column($this->matrix, $i));
         }
 
@@ -109,28 +109,34 @@ class SudokuBoard
     }
 
     /**
-     * @throws NonSquareMatrix
      */
     private function quadrants(): array
     {
         $quadrants = [];
 
-        for ($i = 0; $i < sqrt(count($this->matrix)); $i++) {
-            $quadrants[] = new NumberSet($this->buildQuadrant($i));
+        $quadrantSize = (int)sqrt(count($this->matrix));
+        for ($i = 0; $i < count($this->matrix); $i += $quadrantSize) {
+            for ($j = 0; $j < count($this->matrix); $j += $quadrantSize) {
+                $quadrants[] = new NumberSet($this->buildQuadrant($i, $j));
+            }
         }
 
         return $quadrants;
     }
 
     /**
+     * @param int $quadrantStartRow
+     * @param int $quadrantStartCol
+     * @return array
      */
-    private function buildQuadrant(int $q): array
+    private function buildQuadrant(int $quadrantStartRow, int $quadrantStartCol): array
     {
         $quadrant = [];
 
-        for ($i = 0; $i < sqrt(count($this->matrix)); $i++) {
-            for ($j = 0; $j < sqrt(count($this->matrix)); $j++) {
-                $quadrant[] = $this->matrix[$q * $i + $i][$q * $j + $j];
+        $quadrantSize = sqrt(count($this->matrix));
+        for ($i = 0; $i < $quadrantSize; $i++) {
+            for ($j = 0; $j < $quadrantSize; $j++) {
+                $quadrant[] = $this->matrix[$quadrantStartRow + $i][$quadrantStartCol + $j];
             }
         }
 
