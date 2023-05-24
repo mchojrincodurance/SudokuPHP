@@ -77,6 +77,9 @@ class SudokuBoard
         return false;
     }
 
+    /**
+     * @throws NonSquareMatrix
+     */
     public function hasRepeatedNumberInAnyQuadrant(): bool
     {
         foreach ($this->quadrants() as $quadrant) {
@@ -110,6 +113,9 @@ class SudokuBoard
         return $columns;
     }
 
+    /**
+     * @throws NonSquareMatrix
+     */
     private function quadrants(): array
     {
         $quadrants = [];

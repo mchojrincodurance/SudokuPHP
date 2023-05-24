@@ -40,6 +40,7 @@ class SudokuBoardShould extends TestCase
 
     /**
      * @test
+     * @throws NonSquareMatrix
      */
     public function should_not_accept_tiny_matrices(): void
     {
@@ -68,6 +69,8 @@ class SudokuBoardShould extends TestCase
     /**
      * @test
      * @dataProvider repeatedRowsMatricesProvider
+     * @throws NonSquareMatrix
+     * @throws TooSmallMatrix
      */
     public function should_know_when_it_has_repeated_numbers_in_any_row(array $matrix, bool $expectedResult): void
     {
@@ -78,6 +81,8 @@ class SudokuBoardShould extends TestCase
     /**
      * @test
      * @dataProvider repeatedColumnsMatricesProvider
+     * @throws NonSquareMatrix
+     * @throws TooSmallMatrix
      */
     public function should_know_when_it_has_repeated_numbers_in_any_column(array $matrix, bool $expectedResult): void
     {
@@ -88,6 +93,8 @@ class SudokuBoardShould extends TestCase
     /**
      * @test
      * @dataProvider repeatedQuadrantsMatricesProvider
+     * @throws NonSquareMatrix
+     * @throws TooSmallMatrix
      */
     public function should_know_when_it_has_repeated_numbers_in_any_quadrant(array $matrix, bool $expectedResult): void
     {
