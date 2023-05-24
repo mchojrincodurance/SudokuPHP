@@ -23,8 +23,39 @@ class SolutionChecker
             !$sudokuBoard->hasRepeatedNumberInAnyQuadrant();
     }
 
-    public function isSolutionFor(array $proposedSolution, array $initialGrid): bool
+    /**
+     * @throws NonSquareMatrix
+     * @throws TooSmallMatrix
+     */
+    public function isSolutionFor(array $initialGrid, array $proposedSolution): bool
     {
+        return $this->compliesWithSudokuRules($proposedSolution) && $this->isAMatchFor($initialGrid, $proposedSolution);
+    }
+
+    private function isAMatchFor(array $initialGrid, array $proposedSolution): bool
+    {
+        try {
+            $initialSudoku = new SudokuBoard($initialGrid);
+            $solvedSudoku = new SudokuBoard($proposedSolution);
+        } catch (NonSquareMatrix|TooSmallMatrix $e) {
+
+            return false;
+        }
+
+        if (count($initialGrid) != count($proposedSolution)) {
+
+            return false;
+        }
+
+        for ($i = 0; $i < count($initialGrid); $i++) {
+            for ($j = 0; $j < count($initialGrid); $j++ ) {
+                if ($initialGrid[$i][$j] != 0 && $initialGrid[$i][$j] != $proposedSolution[$i][$j]) {
+
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 }
