@@ -15,7 +15,7 @@ class Quadrant
      */
     public function __construct(array $matrix)
     {
-        if (!$this->isSquare($matrix)) {
+        if (!self::isSquare($matrix)) {
 
             throw new NonSquareMatrix();
         }
@@ -46,7 +46,7 @@ class Quadrant
     {
         for ($i = 0; $i < count($this->matrix); $i++) {
             for ($j = 0; $j < count($this->matrix); $j++) {
-                if ($this->matrix[$i][$j] == $number && $i == $row && $j == $col) {
+                if ($this->matrix[$i][$j] == $number && $i !== $row && $j !== $col) {
 
                     return true;
                 }
