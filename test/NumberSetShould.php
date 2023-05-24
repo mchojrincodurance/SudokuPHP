@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Sudoku;
 
 use PHPUnit\Framework\TestCase;
-use Sudoku\Exception\NonSquareMatrix;
 
-class QuadrantShould extends TestCase
+class NumberSetShould extends TestCase
 {
     /**
      * @test
      * @dataProvider arrayProvider
-     * @throws NonSquareMatrix
      */
-    public function know_if_it_has_repeated_numbers(array $matrix, bool $expectedResult): void
+    public function know_if_it_has_repeated_numbers(array $array, bool $expectedResult): void
     {
-        $row = new Quadrant($matrix);
+        $row = new NumberSet($array);
 
         $this->assertEquals($expectedResult, $row->hasRepeatedNumber());
     }
@@ -26,10 +24,10 @@ class QuadrantShould extends TestCase
         return
             [
                 [
-                    [[1, 2,],[2, 5,]], true,
+                    [1, 2, 2, 5,], true,
                 ],
                 [
-                    [[1, 2,],[3, 5,]], false,
+                    [1, 2, 3, 5,], false,
                 ],
             ];
     }

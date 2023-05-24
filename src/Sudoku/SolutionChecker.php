@@ -13,7 +13,7 @@ class SolutionChecker
      * @throws NonSquareMatrix
      * @throws TooSmallMatrix
      */
-    public function isPossibleSolution(array $matrix): bool
+    public function compliesWithSudokuRules(array $matrix): bool
     {
         $sudokuBoard = new SudokuBoard($matrix);
 

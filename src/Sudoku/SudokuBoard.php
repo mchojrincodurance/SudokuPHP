@@ -94,12 +94,7 @@ class SudokuBoard
 
     private function rows(): array
     {
-        $rows = [];
-        foreach ($this->matrix as $row) {
-            $rows[] = new Row($row);
-        }
-
-        return $rows;
+        return array_map(static fn(array $row): NumberSet => new NumberSet($row), $this->matrix);
     }
 
     private function columns(): array
@@ -107,7 +102,7 @@ class SudokuBoard
         $columns = [];
 
         for($i = 0; $i < count($this->matrix); $i++) {
-            $columns[] = new Row(array_column($this->matrix, $i));
+            $columns[] = new NumberSet(array_column($this->matrix, $i));
         }
 
         return $columns;
@@ -121,26 +116,24 @@ class SudokuBoard
         $quadrants = [];
 
         for ($i = 0; $i < sqrt(count($this->matrix)); $i++) {
-            $quadrants[] = $this->buildQuadrant($i);
+            $quadrants[] = new NumberSet($this->buildQuadrant($i));
         }
 
         return $quadrants;
     }
 
     /**
-     * @throws NonSquareMatrix
      */
-    private function buildQuadrant(int $q): Quadrant
+    private function buildQuadrant(int $q): array
     {
         $quadrant = [];
 
         for ($i = 0; $i < sqrt(count($this->matrix)); $i++) {
-            $quadrant[$i] = [];
             for ($j = 0; $j < sqrt(count($this->matrix)); $j++) {
-                $quadrant[$i][$j] = $this->matrix[$q * $i + $i][$q * $j + $j];
+                $quadrant[] = $this->matrix[$q * $i + $i][$q * $j + $j];
             }
         }
 
-        return new Quadrant($quadrant);
+        return $quadrant;
     }
 }

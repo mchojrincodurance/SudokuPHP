@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku;
 
-class Row
+class NumberSet
 {
     private array $array;
 
