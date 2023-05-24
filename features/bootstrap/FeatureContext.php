@@ -30,7 +30,7 @@ class FeatureContext implements Context
     /**
      * @Given there is a file called :arg1, which contains:
      */
-    public function thereIsAFileCalledWhichContains(string $filename, TableNode $table)
+    public function thereIsAFileCalledWhichContains(string $filename, TableNode $table): void
     {
         $file = fopen($this->testDataDir.DIRECTORY_SEPARATOR.$filename, "w");
         foreach ($table->getRows() as $row) {
@@ -42,7 +42,7 @@ class FeatureContext implements Context
     /**
      * @Then I should get :arg1
      */
-    public function iShouldGet(string $message)
+    public function iShouldGet(string $message): void
     {
         assertEquals($message, current($this->output));
     }
@@ -50,7 +50,7 @@ class FeatureContext implements Context
     /**
      * @When /^I ask the checker to check the file "([^"]*)"$/
      */
-    public function iAskTheCheckerToCheckTheFile(string $filename)
+    public function iAskTheCheckerToCheckTheFile(string $filename): void
     {
         exec("php check_solution.php ".$this->testDataDir.DIRECTORY_SEPARATOR.$filename, $this->output);
     }
