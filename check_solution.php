@@ -7,13 +7,18 @@ require_once 'vendor/autoload.php';
 use Sudoku\SolutionChecker;
 
 $solutionChecker = new SolutionChecker();
-$inputFile = fopen($argv[1], "r");
-$matrix = [];
-while (!feof($inputFile)) {
-    $readCSV = fgetcsv($inputFile);
-    if (!empty($readCSV)) {
-        $matrix[] = array_map(static fn(string $value) => (int)$value, array_slice($readCSV, 0, -1));
-    }
-}
+echo $solutionChecker->compliesWithSudokuRules(readMatrixFrom($argv[1])) ? "The input complies with Sudoku's rules." : "The input doesn't comply with Sudoku's rules.";
 
-echo $solutionChecker->isPossibleSolution($matrix) ? "The input complies with Sudoku's rules." : "The input doesn't comply with Sudoku's rules.";
+function readMatrixFrom(string $inputFileName): array
+{
+    $inputFile = fopen($inputFileName, "r");
+    $matrix = [];
+    while (!feof($inputFile)) {
+        $readCSV = fgetcsv($inputFile);
+        if (!empty($readCSV)) {
+            $matrix[] = array_map(static fn(string $value) => (int)$value, array_slice($readCSV, 0, -1));
+        }
+    }
+
+    return $matrix;
+}
