@@ -22,4 +22,9 @@ class SolutionChecker
             !$sudokuBoard->hasRepeatedNumberInAnyColumn() &&
             !$sudokuBoard->hasRepeatedNumberInAnyQuadrant();
     }
+
+    public function isSolutionFor(array $proposedSolution, array $initialGrid): bool
+    {
+        return true;
+    }
 }
