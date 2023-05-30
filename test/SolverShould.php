@@ -21,30 +21,51 @@ class SolverShould extends TestCase
     public function gridsProvider(): array
     {
         return [
-            [$this->buildSingleSolutionGrid(), $this->buildSolutionForSingleSolutionGrid()]
+            [$this->buildSingleSolutionGrid(0), $this->buildSolutionForSingleSolutionGrid(0)],
+            [$this->buildSingleSolutionGrid(1), $this->buildSolutionForSingleSolutionGrid(1)]
         ];
     }
 
-    private function buildSingleSolutionGrid(): array
+    private function buildSingleSolutionGrid(int $index): array
     {
-        return [
-            [1, 0, 0, 4,],
-            [3, 0, 0, 2,],
-            [0, 1, 4, 0,],
-            [0, 3, 0, 1,],
-        ];
+        $initilaGrids[0] =
+            [
+                [1, 0, 0, 4,],
+                [3, 0, 0, 2,],
+                [0, 1, 4, 0,],
+                [0, 3, 0, 1,],
+            ];
+
+        $initilaGrids[1] =
+            [
+                [1, 2, 4, 3,],
+                [0, 0, 0, 0,],
+                [4, 0, 3, 0,],
+                [0, 0, 0, 4,],
+            ];
+
+        return $initilaGrids[$index];
     }
 
-    private function buildSolutionForSingleSolutionGrid(): array
+    private function buildSolutionForSingleSolutionGrid(int $index): array
     {
+        $solutions[0] = [
+            [1, 2, 3, 4,],
+            [3, 4, 1, 2,],
+            [2, 1, 4, 3,],
+            [4, 3, 2, 1,],
+        ];
+
+        $solutions[1] = [
+            [1, 2, 4, 3,],
+            [3, 4, 2, 1,],
+            [4, 1, 3, 2,],
+            [2, 3, 1, 4,],
+        ];
+
         return
             [
-                [
-                    [1, 2, 3, 4,],
-                    [3, 4, 1, 2,],
-                    [2, 1, 4, 3,],
-                    [4, 3, 2, 1,],
-                ],
+                $solutions[$index],
             ];
     }
 }
