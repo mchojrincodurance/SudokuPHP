@@ -27,4 +27,9 @@ class NumberSet
 
         return false;
     }
+
+    public function diff(NumberSet ...$otherSets): NumberSet
+    {
+        return $this;
+    }
 }

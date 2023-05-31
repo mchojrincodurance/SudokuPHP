@@ -19,6 +19,15 @@ class NumberSetShould extends TestCase
         $this->assertEquals($expectedResult, $row->hasRepeatedNumber());
     }
 
+    /**
+     * @test
+     * @dataProvider diffProvider
+     */
+    public function calculate_its_difference_with_other_sets(NumberSet $initialSet, array $otherSets, NumberSet $result): void
+    {
+        $this->assertEquals($initialSet->diff(...$otherSets), $result);
+    }
+
     public function arrayProvider(): array
     {
         return
@@ -28,6 +37,16 @@ class NumberSetShould extends TestCase
                 ],
                 [
                     [1, 2, 3, 5,], false,
+                ],
+            ];
+    }
+
+    public function diffProvider(): array
+    {
+        return
+            [
+                [
+                    new NumberSet([1, 2, 3, 5,]), [ new NumberSet([]), ], new NumberSet([1, 2, 3, 5,]),
                 ],
             ];
     }
