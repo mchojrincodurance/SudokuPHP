@@ -203,7 +203,7 @@ class SudokuBoardShould extends TestCase
         return
             [
                 [ new SudokuBoard($initialMatrix), 0, 0, 1, ],
-                [ new SudokuBoard($initialMatrix), 0, 1, 2, ],
+                [ new SudokuBoard($initialMatrix), 0, 2, 2, ],
                 [ new SudokuBoard($initialMatrix), 0, 0, 2, ],
                 [ new SudokuBoard($initialMatrix), 3, 0, 4, ],
             ];
