@@ -46,27 +46,32 @@ class SudokuBoard
         return count($matrix) < 4;
     }
 
+    private function hasRepeatedNumber(array $array): bool
+    {
+        return array_filter($array) !== array_unique(array_filter($array));
+    }
+
     private function hasRepeatedNumberInAnyRow(array $matrix): bool
     {
         return !empty(
-            array_filter(
-                $matrix, static fn(array $row) => array_unique(
-                    array_filter($row)) != array_filter($row)
-            )
+        array_filter(
+            $matrix, fn(array $row) => $this->hasRepeatedNumber($row)
+        )
         );
     }
 
     public function hasRepeatedNumberInAnyColumn(array $matrix): bool
     {
-        for ($i = 0; $i < count($matrix); $i++) {
-            $array = array_filter(array_column($matrix, $i));
-            if (array_unique($array) !== $array) {
-
-                return true;
-            }
-        }
-
-        return false;
+        return !empty(
+        array_filter(
+            array_map(
+                static function (int $col) use ($matrix) {
+                    return array_column($matrix, $col);
+                },
+                range(0, count($matrix) - 1)
+            ), fn(array $col) => $this->hasRepeatedNumber($col)
+        )
+        );
     }
 
     /**
@@ -74,25 +79,25 @@ class SudokuBoard
     public function hasRepeatedNumberInAnyQuadrant(array $matrix): bool
     {
         $quadrantSize = (int)sqrt(count($matrix));
+        $quadrants = [];
 
         for ($i = 0; $i < $quadrantSize; $i++) {
             for ($j = 0; $j < $quadrantSize; $j++) {
-                if ($this->hasRepeatedNumberInQuadrant($matrix, $i * $quadrantSize, $j * $quadrantSize)) {
-
-                    return true;
-                }
+                $quadrants[] = $this->buildQuadrant($matrix, $i * $quadrantSize, $j * $quadrantSize);
             }
         }
 
-        return false;
+        return !empty(array_filter($quadrants, fn(array $quadrant) => $this->hasRepeatedNumber($quadrant)));
     }
 
-    public function rows(): array
+    public
+    function rows(): array
     {
         return array_map(static fn(array $row): Set => new Set($row), $this->matrix);
     }
 
-    public function columns(): array
+    public
+    function columns(): array
     {
         return array_map(
             static fn(array $column) => new Set($column),
@@ -105,46 +110,34 @@ class SudokuBoard
     }
 
     /**
-     */
-    public function quadrants(): array
-    {
-        $quadrants = [];
-
-        $quadrantSize = (int)sqrt(count($this->matrix));
-        for ($i = 0; $i < count($this->matrix); $i += $quadrantSize) {
-            for ($j = 0; $j < count($this->matrix); $j += $quadrantSize) {
-                $quadrants[] = new Set($this->buildQuadrant($i, $j));
-            }
-        }
-
-        return $quadrants;
-    }
-
-    /**
+     * @param array $matrix
      * @param int $quadrantStartRow
      * @param int $quadrantStartCol
      * @return array
      */
-    private function buildQuadrant(int $quadrantStartRow, int $quadrantStartCol): array
+    private
+    function buildQuadrant(array $matrix, int $quadrantStartRow, int $quadrantStartCol): array
     {
         $quadrant = [];
 
-        $quadrantSize = sqrt(count($this->matrix));
+        $quadrantSize = (int)sqrt(count($matrix));
         for ($i = 0; $i < $quadrantSize; $i++) {
             for ($j = 0; $j < $quadrantSize; $j++) {
-                $quadrant[] = $this->matrix[$quadrantStartRow + $i][$quadrantStartCol + $j];
+                $quadrant[] = $matrix[$quadrantStartRow + $i][$quadrantStartCol + $j];
             }
         }
 
         return $quadrant;
     }
 
-    public function size(): int
+    public
+    function size(): int
     {
         return count($this->matrix);
     }
 
-    public function valueAt(int $row, int $col): int
+    public
+    function valueAt(int $row, int $col): int
     {
         if ($row < 0 || $row >= $this->size() || $col < 0 || $col >= $this->size()) {
 
@@ -154,12 +147,14 @@ class SudokuBoard
         return $this->matrix[$row][$col];
     }
 
-    public function setSquare(array $square, int $value): void
+    public
+    function setSquare(array $square, int $value): void
     {
         $this->matrix[$square[0]][$square[1]] = $value;
     }
 
-    public function row(int $row): Set
+    public
+    function row(int $row): Set
     {
         if ($row < 0 || $row >= $this->size()) {
 
@@ -173,14 +168,16 @@ class SudokuBoard
      * @param array $matrix
      * @return bool
      */
-    private function hasIllegallyRepeatedNumbers(array $matrix): bool
+    private
+    function hasIllegallyRepeatedNumbers(array $matrix): bool
     {
         return $this->hasRepeatedNumberInAnyColumn($matrix) ||
             $this->hasRepeatedNumberInAnyRow($matrix) ||
             $this->hasRepeatedNumberInAnyQuadrant($matrix);
     }
 
-    private function hasRepeatedNumberInQuadrant(array $matrix, int $firstRow, int $firstCol): bool
+    private
+    function hasRepeatedNumberInQuadrant(array $matrix, int $firstRow, int $firstCol): bool
     {
         $size = (int)sqrt(count($matrix));
         $array = [];
@@ -201,7 +198,8 @@ class SudokuBoard
      * @return void
      * @throws NonSquareMatrix
      */
-    private function validateShape(array $matrix): void
+    private
+    function validateShape(array $matrix): void
     {
         if (!$this->isSquare($matrix)) {
 
@@ -214,7 +212,8 @@ class SudokuBoard
      * @return void
      * @throws TooSmallMatrix
      */
-    private function validateSize(array $matrix): void
+    private
+    function validateSize(array $matrix): void
     {
         if ($this->isSmallerThan4By4($matrix)) {
 
@@ -227,7 +226,8 @@ class SudokuBoard
      * @return void
      * @throws IllegallyRepeatedNumbers
      */
-    private function validateRepeatedNumbers(array $matrix): void
+    private
+    function validateRepeatedNumbers(array $matrix): void
     {
         if ($this->hasIllegallyRepeatedNumbers($matrix)) {
 
@@ -238,7 +238,8 @@ class SudokuBoard
     /**
      * @return bool[]
      */
-    protected function getIncompleteRows(): array
+    protected
+    function getIncompleteRows(): array
     {
         return array_filter(
             $this->rows(),
@@ -253,7 +254,8 @@ class SudokuBoard
      * @throws NotEmptySquare
      * @throws InvalidSquareReference
      */
-    public function addNumber(int $row, int $col, int $value): SudokuBoard
+    public
+    function addNumber(int $row, int $col, int $value): SudokuBoard
     {
         if ($row < 0 || $row >= $this->size() || $col < 0 || $col >= $this->size()) {
 
