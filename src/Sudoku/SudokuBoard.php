@@ -31,6 +31,11 @@ class SudokuBoard
         $this->matrix = $matrix;
     }
 
+    public function isComplete(): bool
+    {
+        return empty($this->getIncompleteRows());
+    }
+
     private function isSquare(array $matrix): bool
     {
         return count($matrix) === count(current($matrix));
@@ -41,22 +46,14 @@ class SudokuBoard
         return count($matrix) < 4;
     }
 
-    public function isComplete(): bool
+    private function hasRepeatedNumberInAnyRow(array $matrix): bool
     {
-        return empty($this->getIncompleteRows());
-    }
-
-    public function hasRepeatedNumberInAnyRow(array $matrix): bool
-    {
-        for ($i = 0; $i < count($matrix); $i++) {
-            $array = array_filter($matrix[$i]);
-            if (array_unique($array) !== $array) {
-
-                return true;
-            }
-        }
-
-        return false;
+        return !empty(
+            array_filter(
+                $matrix, static fn(array $row) => array_unique(
+                    array_filter($row)) != array_filter($row)
+            )
+        );
     }
 
     public function hasRepeatedNumberInAnyColumn(array $matrix): bool
@@ -76,11 +73,11 @@ class SudokuBoard
      */
     public function hasRepeatedNumberInAnyQuadrant(array $matrix): bool
     {
-        $quadrantQuantity = (int)sqrt(count($matrix));
+        $quadrantSize = (int)sqrt(count($matrix));
 
-        for ($i = 0; $i < $quadrantQuantity; $i ++) {
-            for ($j = 0; $j < $quadrantQuantity; $j ++) {
-                if ($this->hasRepeatedNumberInQuadrant($matrix, $i * $quadrantQuantity, $j * $quadrantQuantity)) {
+        for ($i = 0; $i < $quadrantSize; $i++) {
+            for ($j = 0; $j < $quadrantSize; $j++) {
+                if ($this->hasRepeatedNumberInQuadrant($matrix, $i * $quadrantSize, $j * $quadrantSize)) {
 
                     return true;
                 }
