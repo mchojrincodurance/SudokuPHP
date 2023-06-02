@@ -190,6 +190,11 @@ class SudokuBoardShould extends TestCase
             ];
     }
 
+    /**
+     * @throws TooSmallMatrix
+     * @throws NonSquareMatrix
+     * @throws IllegallyRepeatedNumbers
+     */
     public function illegalNextMoveProvider(): array
     {
         $initialMatrix =

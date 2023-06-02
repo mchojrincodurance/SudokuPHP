@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Sudoku\Exception\NonSquareMatrix;
 use Sudoku\Exception\TooSmallMatrix;
 use Sudoku\Exception\IllegallyRepeatedNumbers;
+use Sudoku\Exception\NotEmptySquare;
 
 class SudokuBoard
 {
@@ -251,9 +252,14 @@ class SudokuBoard
      * @throws NonSquareMatrix
      * @throws IllegallyRepeatedNumbers
      * @throws TooSmallMatrix
+     * @throws NotEmptySquare
      */
     public function addNumber(int $row, int $col, int $value): SudokuBoard
     {
+        if (!empty($this->matrix[$row][$col])) {
+
+            throw new NotEmptySquare();
+        }
         $newMatrix = $this->matrix;
         $newMatrix[$row][$col] = $value;
 
