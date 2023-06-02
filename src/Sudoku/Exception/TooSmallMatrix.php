@@ -6,7 +6,6 @@ namespace Sudoku\Exception;
 
 use Exception;
 
-class TooSmallMatrix extends Exception
+class TooSmallMatrix extends InvalidMatrix
 {
-
 }

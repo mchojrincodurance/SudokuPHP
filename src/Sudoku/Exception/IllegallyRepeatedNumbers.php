@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Sudoku\Exception;
 
-class NonSquareMatrix extends InvalidMatrix
+class IllegallyRepeatedNumbers extends InvalidMatrix
 {
 }

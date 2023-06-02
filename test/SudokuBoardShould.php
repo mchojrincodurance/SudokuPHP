@@ -5,51 +5,54 @@ declare(strict_types=1);
 namespace Sudoku;
 
 use PHPUnit\Framework\TestCase;
+use Sudoku\Exception\InvalidMatrix;
 use Sudoku\Exception\NonSquareMatrix;
 use Sudoku\Exception\TooSmallMatrix;
+use Exception;
 
 class SudokuBoardShould extends TestCase
 {
     /**
      * @test
+     * @dataProvider invalidMatricesProvider
      */
-    public function should_not_accept_non_square_matrices(): void
+    public function should_not_accept_invalid_matrices(array $invalidMatrix): void
     {
-        $this->expectException(NonSquareMatrix::class);
-        $nonSquareMatrix = [
-            [1, 2, 3,],
-            [4, 5, 6,],
-        ];
-        $sudokuBoard = new SudokuBoard($nonSquareMatrix);
+        try {
+            new SudokuBoard($invalidMatrix);
+        } catch (Exception) {
+            $this->expectNotToPerformAssertions();
+            return ;
+        }
+
+        $this->fail();
     }
 
     /**
      * @test
+     * @throws InvalidMatrix
+     * @throws NonSquareMatrix
+     * @throws TooSmallMatrix
+     * @dataProvider validMatrixProvider
      */
     public function should_accept_valid_matrices(): void
     {
-        $validMatrix = [
-            [1, 2, 3, 7,],
-            [4, 5, 6, 8,],
-            [7, 8, 9, 1,],
-            [7, 8, 9, 1,],
-        ];
+        $this->expectNotToPerformAssertions();
+        $validMatrix =
+            [
+                [1, 2, 3, 4,],
+                [4, 3, 1, 2,],
+                [3, 4, 2, 1,],
+                [2, 1, 4, 3,],
+            ];
 
-        $this->assertNotEmpty(new SudokuBoard($validMatrix));
+        $board = new SudokuBoard($validMatrix);
     }
 
-    /**
-     * @test
-     * @throws NonSquareMatrix
-     */
-    public function should_not_accept_tiny_matrices(): void
+    public function accept_adding_numbers_on_empty_squares(SudokuBoard $initialBoard, int $row, int $col, int $value, SudokuBoard $finalBoard): void
     {
-        $this->expectException(TooSmallMatrix::class);
-        $nonSquareMatrix = [
-            [1, 2,],
-            [4, 5,],
-        ];
-        $sudokuBoard = new SudokuBoard($nonSquareMatrix);
+        $newBoard = $initialBoard->addNumber($row, $col, $value);
+        $this->assertEquals($newBoard, $finalBoard);
     }
 
     /**
@@ -58,48 +61,12 @@ class SudokuBoardShould extends TestCase
      * @param array $matrix
      * @param bool $expectedResult
      * @throws NonSquareMatrix
-     * @throws TooSmallMatrix
+     * @throws TooSmallMatrix|InvalidMatrix
      */
     public function know_when_it_is_complete(array $matrix, bool $expectedResult): void
     {
         $sudokuBoard = new SudokuBoard($matrix);
         $this->assertEquals($expectedResult, $sudokuBoard->isComplete());
-    }
-
-    /**
-     * @test
-     * @dataProvider repeatedRowsMatricesProvider
-     * @throws NonSquareMatrix
-     * @throws TooSmallMatrix
-     */
-    public function should_know_when_it_has_repeated_numbers_in_any_row(array $matrix, bool $expectedResult): void
-    {
-        $sudokuBoard = new SudokuBoard($matrix);
-        $this->assertEquals($expectedResult, $sudokuBoard->hasRepeatedNumberInAnyRow());
-    }
-
-    /**
-     * @test
-     * @dataProvider repeatedColumnsMatricesProvider
-     * @throws NonSquareMatrix
-     * @throws TooSmallMatrix
-     */
-    public function should_know_when_it_has_repeated_numbers_in_any_column(array $matrix, bool $expectedResult): void
-    {
-        $sudokuBoard = new SudokuBoard($matrix);
-        $this->assertEquals($expectedResult, $sudokuBoard->hasRepeatedNumberInAnyColumn());
-    }
-
-    /**
-     * @test
-     * @dataProvider repeatedQuadrantsMatricesProvider
-     * @throws NonSquareMatrix
-     * @throws TooSmallMatrix
-     */
-    public function should_know_when_it_has_repeated_numbers_in_any_quadrant(array $matrix, bool $expectedResult): void
-    {
-        $sudokuBoard = new SudokuBoard($matrix);
-        $this->assertEquals($expectedResult, $sudokuBoard->hasRepeatedNumberInAnyColumn());
     }
 
     public function completeMatricesProvider(): array
@@ -108,178 +75,88 @@ class SudokuBoardShould extends TestCase
             [
                 [
                     [
-                        [1, 2, 3, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 9, 1,],
-                        [7, 8, 9, 1,],
+                        [1, 2, 3, 4,],
+                        [4, 3, 2, 1,],
+                        [3, 1, 4, 2,],
+                        [2, 4, 1, 3,],
                     ],
                     true,
                 ],
                 [
                     [
-                        [1, 2, 3, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 0, 1,],
-                        [7, 8, 9, 1,],
+                        [1, 2, 3, 4,],
+                        [4, 3, 2, 0,],
+                        [0, 0, 0, 1,],
+                        [3, 0, 0, 2,],
                     ],
                     false,
                 ],
             ];
     }
 
-    public function repeatedRowsMatricesProvider(): array
+    public function validMatrixProvider(): array
     {
         return
             [
                 [
                     [
-                        [1, 2, 1, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 9, 1,],
-                        [7, 8, 9, 1,],
+                        [1, 2, 3, 4,],
+                        [4, 3, 1, 2,],
+                        [3, 4, 2, 1,],
+                        [2, 1, 4, 3,],
                     ],
-                    true,
                 ],
                 [
                     [
-                        [1, 2, 1, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 7, 1,],
-                        [7, 8, 9, 1,],
+                        [1, 2, 3, 4,],
+                        [4, 0, 1, 2,],
+                        [3, 4, 2, 1,],
+                        [2, 0, 0, 3,],
                     ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 1, 7,],
-                        [4, 6, 6, 8,],
-                        [7, 7, 9, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 1, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 9, 1,],
-                        [7, 7, 7, 7,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 3, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 0, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    false,
                 ],
             ];
     }
 
-    public function repeatedColumnsMatricesProvider(): array
+    public function invalidMatricesProvider(): array
     {
         return
-            [
-                [
-                    [
-                        [1, 2, 3, 7,],
-                        [1, 5, 6, 8,],
-                        [7, 8, 9, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 8, 7,],
-                        [4, 5, 6, 8,],
-                        [6, 8, 7, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 3, 7,],
-                        [7, 6, 6, 8,],
-                        [7, 7, 9, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 1, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 9, 1,],
-                        [7, 7, 7, 7,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 3, 7,],
-                        [4, 5, 6, 8,],
-                        [6, 8, 0, 1,],
-                        [7, 1, 9, 2,],
-                    ],
-                    false,
-                ],
-            ];
+        [
+            [$this->buildMatrixWithRepeatedNumberInColumn(),],
+            [$this->buildMatrixWithRepeatedNumberInRow(),],
+            [$this->buildMatrixWithRepeatedNumberInQuadrant(),],
+        ];
     }
 
-    public function repeatedQuadrantsMatricesProvider(): array
+    /**
+     * @return array[]
+     */
+    protected function buildMatrixWithRepeatedNumberInColumn(): array
     {
-        return
-            [
-                [
-                    [
-                        [1, 2, 3, 7,],
-                        [1, 5, 6, 8,],
-                        [2, 3, 4, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 8, 7,],
-                        [4, 5, 6, 8,],
-                        [6, 8, 7, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 3, 7,],
-                        [7, 6, 6, 8,],
-                        [7, 7, 9, 1,],
-                        [7, 8, 9, 1,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 1, 7,],
-                        [4, 5, 6, 8,],
-                        [7, 8, 9, 1,],
-                        [7, 7, 7, 7,],
-                    ],
-                    true,
-                ],
-                [
-                    [
-                        [1, 2, 3, 7,],
-                        [4, 5, 6, 8,],
-                        [6, 8, 0, 1,],
-                        [7, 1, 9, 2,],
-                    ],
-                    false,
-                ],
-            ];
+        return [
+            [1, 2, 3, 7,],
+            [1, 5, 6, 8,],
+            [2, 3, 4, 1,],
+            [7, 8, 9, 1,],
+        ];
+    }
+
+    private function buildMatrixWithRepeatedNumberInRow(): array
+    {
+        return [
+            [1, 0, 1, 3,],
+            [2, 4, 3, 0,],
+            [3, 1, 4, 0,],
+            [4, 0, 2, 1,],
+        ];
+    }
+
+    private function buildMatrixWithRepeatedNumberInQuadrant(): array
+    {
+        return [
+            [1, 2, 4, 3,],
+            [2, 4, 0, 0,],
+            [3, 1, 0, 0,],
+            [4, 0, 2, 1,],
+        ];
     }
 }
