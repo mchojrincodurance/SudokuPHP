@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sudoku;
 
+use Sudoku\Exception\IllegallyRepeatedNumbers;
 use PHPUnit\Framework\TestCase;
 use Sudoku\Exception\InvalidMatrix;
 use Sudoku\Exception\NonSquareMatrix;
@@ -22,7 +23,7 @@ class SudokuBoardShould extends TestCase
             new SudokuBoard($invalidMatrix);
         } catch (Exception) {
             $this->expectNotToPerformAssertions();
-            return ;
+            return;
         }
 
         $this->fail();
@@ -49,10 +50,43 @@ class SudokuBoardShould extends TestCase
         $board = new SudokuBoard($validMatrix);
     }
 
-    public function accept_adding_numbers_on_empty_squares(SudokuBoard $initialBoard, int $row, int $col, int $value, SudokuBoard $finalBoard): void
+    /**
+     * @param SudokuBoard $initialBoard
+     * @param int $row
+     * @param int $col
+     * @param int $value
+     * @param SudokuBoard $finalBoard
+     * @return void
+     * @dataProvider legalNextMoveProvider
+     * @test
+     * @throws InvalidMatrix
+     */
+    public function allow_adding_numbers_on_empty_squares_if_legal(SudokuBoard $initialBoard, int $row, int $col, int $value, SudokuBoard $finalBoard): void
     {
         $newBoard = $initialBoard->addNumber($row, $col, $value);
         $this->assertEquals($newBoard, $finalBoard);
+    }
+
+    /**
+     * @param SudokuBoard $initialBoard
+     * @param int $row
+     * @param int $col
+     * @param int $value
+     * @return void
+     * @dataProvider illegalNextMoveProvider
+     * @test
+     */
+    public function not_allow_adding_numbers_on_empty_squares_if_illegal(SudokuBoard $initialBoard, int $row, int $col, int $value): void
+    {
+        try {
+            $initialBoard->addNumber($row, $col, $value);
+        } catch (Exception) {
+            $this->expectNotToPerformAssertions();
+
+            return;
+        }
+
+        $this->fail();
     }
 
     /**
@@ -120,11 +154,59 @@ class SudokuBoardShould extends TestCase
     public function invalidMatricesProvider(): array
     {
         return
-        [
-            [$this->buildMatrixWithRepeatedNumberInColumn(),],
-            [$this->buildMatrixWithRepeatedNumberInRow(),],
-            [$this->buildMatrixWithRepeatedNumberInQuadrant(),],
-        ];
+            [
+                [$this->buildMatrixWithRepeatedNumberInColumn(),],
+                [$this->buildMatrixWithRepeatedNumberInRow(),],
+                [$this->buildMatrixWithRepeatedNumberInQuadrant(),],
+            ];
+    }
+
+    /**
+     * @throws IllegallyRepeatedNumbers
+     * @throws TooSmallMatrix
+     * @throws NonSquareMatrix
+     */
+    public function legalNextMoveProvider(): array
+    {
+        $initialMatrix =
+            [
+                [0, 0, 0, 0,],
+                [0, 0, 0, 0,],
+                [0, 0, 0, 0,],
+                [0, 0, 0, 0,],
+            ];
+
+        $finalMatrix =
+            [
+                [1, 0, 0, 0,],
+                [0, 0, 0, 0,],
+                [0, 0, 0, 0,],
+                [0, 0, 0, 0,],
+            ];
+
+        return
+            [
+                [ new SudokuBoard($initialMatrix), 0, 0, 1, new SudokuBoard($finalMatrix), ],
+            ];
+    }
+
+    public function illegalNextMoveProvider(): array
+    {
+        $initialMatrix =
+            [
+                [0, 1, 3, 0,],
+                [2, 0, 0, 0,],
+                [0, 4, 0, 0,],
+                [0, 0, 0, 1,],
+            ];
+
+        return
+            [
+                [ new SudokuBoard($initialMatrix), 0, 0, 1, ],
+                [ new SudokuBoard($initialMatrix), 0, 1, 2, ],
+                [ new SudokuBoard($initialMatrix), 0, 0, 2, ],
+                [ new SudokuBoard($initialMatrix), 3, 0, 4, ],
+            ];
     }
 
     /**
