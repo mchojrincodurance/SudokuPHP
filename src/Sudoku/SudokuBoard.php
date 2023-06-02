@@ -192,6 +192,8 @@ class SudokuBoard
             }
         }
 
+        $array = array_filter($array);
+
         return array_unique($array) !== $array;
     }
 
@@ -245,8 +247,16 @@ class SudokuBoard
         );
     }
 
+    /**
+     * @throws NonSquareMatrix
+     * @throws IllegallyRepeatedNumbers
+     * @throws TooSmallMatrix
+     */
     public function addNumber(int $row, int $col, int $value): SudokuBoard
     {
-        return new SudokuBoard($this->matrix);
+        $newMatrix = $this->matrix;
+        $newMatrix[$row][$col] = $value;
+
+        return new SudokuBoard($newMatrix);
     }
 }
