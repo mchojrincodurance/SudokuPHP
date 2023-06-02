@@ -6,6 +6,7 @@ namespace Sudoku;
 
 use Ds\Set;
 use InvalidArgumentException;
+use Sudoku\Exception\InvalidSquareReference;
 use Sudoku\Exception\NonSquareMatrix;
 use Sudoku\Exception\TooSmallMatrix;
 use Sudoku\Exception\IllegallyRepeatedNumbers;
@@ -75,11 +76,11 @@ class SudokuBoard
      */
     public function hasRepeatedNumberInAnyQuadrant(array $matrix): bool
     {
-        $quadrantSize = sqrt(count($matrix));
+        $quadrantQuantity = (int)sqrt(count($matrix));
 
-        for ($i = 0; $i < $quadrantSize; $i += $quadrantSize) {
-            for ($j = 0; $j < $quadrantSize; $j += $quadrantSize) {
-                if ($this->hasRepeatedNumberInQuadrant($matrix, $i, $j)) {
+        for ($i = 0; $i < $quadrantQuantity; $i ++) {
+            for ($j = 0; $j < $quadrantQuantity; $j ++) {
+                if ($this->hasRepeatedNumberInQuadrant($matrix, $i * $quadrantQuantity, $j * $quadrantQuantity)) {
 
                     return true;
                 }
@@ -184,7 +185,7 @@ class SudokuBoard
 
     private function hasRepeatedNumberInQuadrant(array $matrix, int $firstRow, int $firstCol): bool
     {
-        $size = sqrt(count($matrix));
+        $size = (int)sqrt(count($matrix));
         $array = [];
 
         for ($i = $firstRow; $i < $firstRow + $size; $i++) {
@@ -253,9 +254,15 @@ class SudokuBoard
      * @throws IllegallyRepeatedNumbers
      * @throws TooSmallMatrix
      * @throws NotEmptySquare
+     * @throws InvalidSquareReference
      */
     public function addNumber(int $row, int $col, int $value): SudokuBoard
     {
+        if ($row < 0 || $row >= $this->size() || $col < 0 || $col >= $this->size()) {
+
+            throw new InvalidSquareReference();
+        }
+
         if (!empty($this->matrix[$row][$col])) {
 
             throw new NotEmptySquare();

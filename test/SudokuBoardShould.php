@@ -36,18 +36,11 @@ class SudokuBoardShould extends TestCase
      * @throws TooSmallMatrix
      * @dataProvider validMatrixProvider
      */
-    public function should_accept_valid_matrices(): void
+    public function should_accept_valid_matrices(array $validMatrix): void
     {
         $this->expectNotToPerformAssertions();
-        $validMatrix =
-            [
-                [1, 2, 3, 4,],
-                [4, 3, 1, 2,],
-                [3, 4, 2, 1,],
-                [2, 1, 4, 3,],
-            ];
 
-        $board = new SudokuBoard($validMatrix);
+        new SudokuBoard($validMatrix);
     }
 
     /**
@@ -241,8 +234,8 @@ class SudokuBoardShould extends TestCase
     {
         return [
             [1, 2, 4, 3,],
-            [2, 4, 0, 0,],
-            [3, 1, 0, 0,],
+            [0, 4, 0, 0,],
+            [3, 1, 0, 2,],
             [4, 0, 2, 1,],
         ];
     }
